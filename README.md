@@ -1,8 +1,7 @@
 # DesafioDSV
 **Sobre o projeto**
 
-Projeto criado em .Net 6.0 para leitura e inserção no banco de dados de uma planilha que contém duas abas, de Clientes e Débitos, foi 
-desenvolvido com Windows Form, onde a conexão é feita diretamente através dele, contendo campos para definir o SERVER, DATABASE, USERID e PASSWORD.
+Projeto criado em .Net 6.0 para leitura e inserção no banco de dados de uma planilha utilizando closedXML, que contém duas abas, de Clientes e Débitos. Foi desenvolvido com Windows Form, onde a conexão é feita diretamente através dele, contendo campos para definir o SERVER, DATABASE, USERID e PASSWORD.
 
 **Sobre a planilha**
 
