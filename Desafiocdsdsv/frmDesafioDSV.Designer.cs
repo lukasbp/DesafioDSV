@@ -106,9 +106,8 @@ namespace Desafiocdsdsv
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '*';
             txtPassword.Size = new Size(100, 23);
-            txtPassword.TabIndex = 8;
+            txtPassword.TabIndex = 7;
             txtPassword.MaskInputRejected += txtPassword_MaskInputRejected;
-            txtPassword.MaxLength = 128;
             // 
             // label5
             // 
@@ -116,7 +115,7 @@ namespace Desafiocdsdsv
             label5.Location = new Point(324, 14);
             label5.Name = "label5";
             label5.Size = new Size(68, 15);
-            label5.TabIndex = 7;
+            label5.TabIndex = 6;
             label5.Text = "PASSWORD";
             // 
             // label4
@@ -125,7 +124,7 @@ namespace Desafiocdsdsv
             label4.Location = new Point(218, 14);
             label4.Name = "label4";
             label4.Size = new Size(48, 15);
-            label4.TabIndex = 5;
+            label4.TabIndex = 4;
             label4.Text = "USER ID";
             // 
             // txtUserid
@@ -134,7 +133,7 @@ namespace Desafiocdsdsv
             txtUserid.MaxLength = 128;
             txtUserid.Name = "txtUserid";
             txtUserid.Size = new Size(100, 23);
-            txtUserid.TabIndex = 4;
+            txtUserid.TabIndex = 5;
             // 
             // label3
             // 
@@ -142,7 +141,7 @@ namespace Desafiocdsdsv
             label3.Location = new Point(112, 14);
             label3.Name = "label3";
             label3.Size = new Size(62, 15);
-            label3.TabIndex = 3;
+            label3.TabIndex = 2;
             label3.Text = "DATABASE";
             // 
             // txtDatabase
@@ -151,7 +150,7 @@ namespace Desafiocdsdsv
             txtDatabase.MaxLength = 128;
             txtDatabase.Name = "txtDatabase";
             txtDatabase.Size = new Size(100, 23);
-            txtDatabase.TabIndex = 2;
+            txtDatabase.TabIndex = 3;
             // 
             // label2
             // 
@@ -159,7 +158,7 @@ namespace Desafiocdsdsv
             label2.Location = new Point(6, 14);
             label2.Name = "label2";
             label2.Size = new Size(46, 15);
-            label2.TabIndex = 1;
+            label2.TabIndex = 0;
             label2.Text = "SERVER";
             // 
             // txtServer
@@ -168,7 +167,7 @@ namespace Desafiocdsdsv
             txtServer.MaxLength = 128;
             txtServer.Name = "txtServer";
             txtServer.Size = new Size(100, 23);
-            txtServer.TabIndex = 0;
+            txtServer.TabIndex = 1;
             txtServer.TabStop = false;
             // 
             // btnTestarCon

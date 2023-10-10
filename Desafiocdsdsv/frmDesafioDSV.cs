@@ -113,8 +113,8 @@ namespace Desafiocdsdsv
                                                         VALUES
                                                             ('{@Fatura}',
                                                             '{@Cliente}',
-                                                            '{Emissao.ToString("dd/MM/yyyy")}',
-                                                            '{Vencimento.ToString("dd/MM/yyyy")}',
+                                                            '{Emissao.ToShortDateString()}',
+                                                            '{Vencimento.ToShortDateString()}',
                                                             {@Valor.ToString().Replace(',', '.')},
                                                             {@Juros.ToString().Replace(',', '.')},
                                                             {@Descontos.ToString().Replace(',', '.')},
