@@ -107,7 +107,8 @@ namespace Desafiocdsdsv
             txtPassword.PasswordChar = '*';
             txtPassword.Size = new Size(100, 23);
             txtPassword.TabIndex = 8;
-            txtPassword.Text = "cdssql";
+            txtPassword.MaskInputRejected += txtPassword_MaskInputRejected;
+            txtPassword.MaxLength = 128;
             // 
             // label5
             // 
@@ -130,10 +131,10 @@ namespace Desafiocdsdsv
             // txtUserid
             // 
             txtUserid.Location = new Point(218, 32);
+            txtUserid.MaxLength = 128;
             txtUserid.Name = "txtUserid";
             txtUserid.Size = new Size(100, 23);
             txtUserid.TabIndex = 4;
-            txtUserid.Text = "sa";
             // 
             // label3
             // 
@@ -147,10 +148,10 @@ namespace Desafiocdsdsv
             // txtDatabase
             // 
             txtDatabase.Location = new Point(112, 32);
+            txtDatabase.MaxLength = 128;
             txtDatabase.Name = "txtDatabase";
             txtDatabase.Size = new Size(100, 23);
             txtDatabase.TabIndex = 2;
-            txtDatabase.Text = "desafiodsv";
             // 
             // label2
             // 
@@ -164,10 +165,11 @@ namespace Desafiocdsdsv
             // txtServer
             // 
             txtServer.Location = new Point(6, 32);
+            txtServer.MaxLength = 128;
             txtServer.Name = "txtServer";
             txtServer.Size = new Size(100, 23);
             txtServer.TabIndex = 0;
-            txtServer.Text = "lucasbelinelli";
+            txtServer.TabStop = false;
             // 
             // btnTestarCon
             // 

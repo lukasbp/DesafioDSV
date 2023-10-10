@@ -188,5 +188,10 @@ namespace Desafiocdsdsv
                 conexao.Close();
             }
         }
+
+        private void txtPassword_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
+        {
+
+        }
     }
 }
