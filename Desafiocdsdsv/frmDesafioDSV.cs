@@ -1,5 +1,6 @@
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Reflection.Metadata.Ecma335;
@@ -67,13 +68,19 @@ namespace Desafiocdsdsv
                                                                 ,[Cep]
                                                                 ,[Cpf])
                                                             VALUES
-                                                                ('{@id}',
-                                                                '{@Nome}',
-                                                                '{@Cidade}',
-                                                                '{@Uf}',
-                                                                '{@Cep}',
-                                                                '{@Cpf}');
+                                                                (@id,
+                                                                @Nome,
+                                                                @Cidade,
+                                                                @Uf,
+                                                                @Cep,
+                                                                @Cpf);
                                                             SET IDENTITY_INSERT dbo.Cliente OFF;", conexao);
+                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                    cmd.Parameters.Add("@Nome", SqlDbType.VarChar).Value = Nome;
+                    cmd.Parameters.Add("@Cidade", SqlDbType.VarChar).Value = Cidade;
+                    cmd.Parameters.Add("@Uf", SqlDbType.VarChar).Value = Uf;
+                    cmd.Parameters.Add("@Cep", SqlDbType.VarChar).Value = Cep;
+                    cmd.Parameters.Add("@Cpf", SqlDbType.VarChar).Value = Cpf;
                     cmd.ExecuteNonQuery();
                     ids.Add(id);
                 }
@@ -111,15 +118,25 @@ namespace Desafiocdsdsv
                                                             ,[Pagamento]
                                                             ,[ValorPago])
                                                         VALUES
-                                                            ('{@Fatura}',
-                                                            '{@Cliente}',
-                                                            '{Emissao.ToShortDateString()}',
-                                                            '{Vencimento.ToShortDateString()}',
-                                                            {@Valor.ToString().Replace(',', '.')},
-                                                            {@Juros.ToString().Replace(',', '.')},
-                                                            {@Descontos.ToString().Replace(',', '.')},
-                                                            {(!string.IsNullOrEmpty(Pagamento) ? $"'{DateTime.Parse(@Pagamento)}'" : "null")},
-                                                            {@ValorPago.ToString().Replace(',', '.')})", conexao);
+                                                            (@Fatura,
+                                                            @Cliente,
+                                                            @Emissao,
+                                                            @Vencimento,
+                                                            @Valor,
+                                                            @Juros,
+                                                            @Descontos,
+                                                            @Pagamento,
+                                                            @ValorPago)", conexao);
+                    cmd.Parameters.Add("@Fatura", SqlDbType.VarChar).Value = Fatura;
+                    cmd.Parameters.Add("@Cliente",SqlDbType.Int).Value = Cliente;
+                    cmd.Parameters.Add("@Emissao",SqlDbType.DateTime).Value = Emissao;
+                    cmd.Parameters.Add("@Vencimento",SqlDbType.DateTime).Value = Vencimento;
+                    cmd.Parameters.Add("@Valor",SqlDbType.Decimal).Value = Valor;
+                    cmd.Parameters.Add("@Juros",SqlDbType.Decimal).Value = Juros;
+                    cmd.Parameters.Add("@Descontos",SqlDbType.Decimal).Value = Descontos;
+                    cmd.Parameters.Add("@Pagamento",SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Pagamento) ? DateTime.Parse(Pagamento) : DBNull.Value;
+                    cmd.Parameters.Add("@ValorPago",SqlDbType.Decimal).Value = ValorPago;
+
                     cmd.ExecuteNonQuery();
                 }
                 MessageBox.Show("Dados Inseridos!");
