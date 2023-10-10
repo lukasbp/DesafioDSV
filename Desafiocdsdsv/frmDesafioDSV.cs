@@ -1,6 +1,7 @@
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 
@@ -89,33 +90,36 @@ namespace Desafiocdsdsv
                     }
                     DateTime.TryParse(planilhas2.Cell($"C{i}").Value.ToString(), out DateTime Emissao);
                     DateTime.TryParse(planilhas2.Cell($"D{i}").Value.ToString(), out DateTime Vencimento);
+                    //string Emissao = planilhas2.Cell($"C{i}").Value.ToString();
+                    //string Vencimento = planilhas2.Cell($"D{i}").Value.ToString();
                     decimal.TryParse(planilhas2.Cell($"E{i}").Value.ToString(), out decimal Valor);
 
                     decimal.TryParse(planilhas2.Cell($"F{i}").Value.ToString(), out decimal Juros);
                     decimal.TryParse(planilhas2.Cell($"G{i}").Value.ToString(), out decimal Descontos);
                     var Pagamento = planilhas2.Cell($"H{i}").Value.ToString();
                     decimal.TryParse(planilhas2.Cell($"I{i}").Value.ToString(), out decimal ValorPago);
-
+                    //'{DateTime.TryParseExact(Emissao.ToString(), "dd/mm/yy", CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces , out Emissao)}',
+                    //'{DateTime.TryParseExact(Vencimento.ToString(), "dd/mm/yy", CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out Vencimento)}',
                     cmd = new SqlCommand($@"INSERT INTO [dbo].[Debitos]
-                                                                        ([Fatura]
-                                                                        ,[Cliente]
-                                                                        ,[Emissao]
-                                                                        ,[Vencimento]
-                                                                        ,[Valor]
-                                                                        ,[Juros]
-                                                                        ,[Descontos]
-                                                                        ,[Pagamento]
-                                                                        ,[ValorPago])
-                                                                    VALUES
-                                                                        ('{@Fatura}',
-                                                                        '{@Cliente}',
-                                                                        '{@Emissao}',
-                                                                        '{@Vencimento}',
-                                                                        {@Valor.ToString().Replace(',', '.')},
-                                                                        {@Juros.ToString().Replace(',', '.')},
-                                                                        {@Descontos.ToString().Replace(',', '.')},
-                                                                        {(!string.IsNullOrEmpty(Pagamento) ? $"'{DateTime.Parse(@Pagamento)}'" : "null")},
-                                                                        {@ValorPago.ToString().Replace(',', '.')})", conexao);
+                                                            ([Fatura]
+                                                            ,[Cliente]
+                                                            ,[Emissao]
+                                                            ,[Vencimento]
+                                                            ,[Valor]
+                                                            ,[Juros]
+                                                            ,[Descontos]
+                                                            ,[Pagamento]
+                                                            ,[ValorPago])
+                                                        VALUES
+                                                            ('{@Fatura}',
+                                                            '{@Cliente}',
+                                                            '{Emissao.ToString("dd/MM/yyyy")}',
+                                                            '{Vencimento.ToString("dd/MM/yyyy")}',
+                                                            {@Valor.ToString().Replace(',', '.')},
+                                                            {@Juros.ToString().Replace(',', '.')},
+                                                            {@Descontos.ToString().Replace(',', '.')},
+                                                            {(!string.IsNullOrEmpty(Pagamento) ? $"'{DateTime.Parse(@Pagamento)}'" : "null")},
+                                                            {@ValorPago.ToString().Replace(',', '.')})", conexao);
                     cmd.ExecuteNonQuery();
                 }
                 MessageBox.Show("Dados Inseridos!");
