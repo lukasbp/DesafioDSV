@@ -44,6 +44,7 @@ namespace Desafiocdsdsv
             label2 = new Label();
             txtServer = new TextBox();
             btnTestarCon = new Button();
+            btnCSV = new Button();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -51,7 +52,7 @@ namespace Desafiocdsdsv
             // 
             btnInsert.Location = new Point(12, 126);
             btnInsert.Name = "btnInsert";
-            btnInsert.Size = new Size(212, 51);
+            btnInsert.Size = new Size(134, 51);
             btnInsert.TabIndex = 1;
             btnInsert.Text = "Inserir no Banco";
             btnInsert.UseVisualStyleBackColor = true;
@@ -107,7 +108,6 @@ namespace Desafiocdsdsv
             txtPassword.PasswordChar = '*';
             txtPassword.Size = new Size(100, 23);
             txtPassword.TabIndex = 7;
-            txtPassword.MaskInputRejected += txtPassword_MaskInputRejected;
             // 
             // label5
             // 
@@ -172,27 +172,38 @@ namespace Desafiocdsdsv
             // 
             // btnTestarCon
             // 
-            btnTestarCon.Location = new Point(234, 126);
+            btnTestarCon.Location = new Point(161, 126);
             btnTestarCon.Name = "btnTestarCon";
-            btnTestarCon.Size = new Size(212, 51);
+            btnTestarCon.Size = new Size(134, 51);
             btnTestarCon.TabIndex = 7;
             btnTestarCon.Text = "Testar Conexão";
             btnTestarCon.UseVisualStyleBackColor = true;
             btnTestarCon.Click += btnTestarCon_Click;
             // 
+            // btnCSV
+            // 
+            btnCSV.Location = new Point(312, 126);
+            btnCSV.Name = "btnCSV";
+            btnCSV.Size = new Size(134, 51);
+            btnCSV.TabIndex = 8;
+            btnCSV.Text = "Gerar CSV";
+            btnCSV.UseVisualStyleBackColor = true;
+            btnCSV.Click += btnCSV_Click;
+            // 
             // frmDesafioDSV
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(460, 196);
+            ClientSize = new Size(457, 194);
+            Controls.Add(btnCSV);
             Controls.Add(btnTestarCon);
             Controls.Add(groupBox1);
             Controls.Add(btnBuscaEx);
             Controls.Add(label1);
             Controls.Add(txtDiretorio);
             Controls.Add(btnInsert);
-            MaximumSize = new Size(476, 235);
-            MinimumSize = new Size(476, 235);
+            MaximumSize = new Size(473, 233);
+            MinimumSize = new Size(473, 233);
             Name = "frmDesafioDSV";
             Text = "Desafio DSV";
             groupBox1.ResumeLayout(false);
@@ -208,13 +219,14 @@ namespace Desafiocdsdsv
         private Button btnBuscaEx;
         private GroupBox groupBox1;
         private Label label2;
-        private TextBox txtServer;
+        public TextBox txtServer;
         private Label label5;
         private Label label4;
-        private TextBox txtUserid;
+        public TextBox txtUserid;
         private Label label3;
-        private TextBox txtDatabase;
-        private MaskedTextBox txtPassword;
+        public TextBox txtDatabase;
+        public MaskedTextBox txtPassword;
         private Button btnTestarCon;
+        private Button btnCSV;
     }
 }

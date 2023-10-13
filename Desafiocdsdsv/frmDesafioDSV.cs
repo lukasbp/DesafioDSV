@@ -128,14 +128,14 @@ namespace Desafiocdsdsv
                                                             @Pagamento,
                                                             @ValorPago)", conexao);
                     cmd.Parameters.Add("@Fatura", SqlDbType.VarChar).Value = Fatura;
-                    cmd.Parameters.Add("@Cliente",SqlDbType.Int).Value = Cliente;
-                    cmd.Parameters.Add("@Emissao",SqlDbType.DateTime).Value = Emissao;
-                    cmd.Parameters.Add("@Vencimento",SqlDbType.DateTime).Value = Vencimento;
-                    cmd.Parameters.Add("@Valor",SqlDbType.Decimal).Value = Valor;
-                    cmd.Parameters.Add("@Juros",SqlDbType.Decimal).Value = Juros;
-                    cmd.Parameters.Add("@Descontos",SqlDbType.Decimal).Value = Descontos;
-                    cmd.Parameters.Add("@Pagamento",SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Pagamento) ? DateTime.Parse(Pagamento) : DBNull.Value;
-                    cmd.Parameters.Add("@ValorPago",SqlDbType.Decimal).Value = ValorPago;
+                    cmd.Parameters.Add("@Cliente", SqlDbType.Int).Value = Cliente;
+                    cmd.Parameters.Add("@Emissao", SqlDbType.DateTime).Value = Emissao;
+                    cmd.Parameters.Add("@Vencimento", SqlDbType.DateTime).Value = Vencimento;
+                    cmd.Parameters.Add("@Valor", SqlDbType.Decimal).Value = Valor;
+                    cmd.Parameters.Add("@Juros", SqlDbType.Decimal).Value = Juros;
+                    cmd.Parameters.Add("@Descontos", SqlDbType.Decimal).Value = Descontos;
+                    cmd.Parameters.Add("@Pagamento", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Pagamento) ? DateTime.Parse(Pagamento) : DBNull.Value;
+                    cmd.Parameters.Add("@ValorPago", SqlDbType.Decimal).Value = ValorPago;
 
                     cmd.ExecuteNonQuery();
                 }
@@ -151,7 +151,7 @@ namespace Desafiocdsdsv
             }
         }
 
-        private void validarCampos(out string erro)
+        public void validarCampos(out string erro)
         {
             erro = "";
 
@@ -206,9 +206,17 @@ namespace Desafiocdsdsv
             }
         }
 
-        private void txtPassword_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
+        private void btnCSV_Click(object sender, EventArgs e)
         {
-
+            frmCSV frm = new frmCSV();
+            if (string.IsNullOrEmpty(StringPreenchida()))
+            {
+                return;
+            }
+            else
+            {
+                frm.Show();
+            }
         }
     }
 }
