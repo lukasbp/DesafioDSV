@@ -206,16 +206,120 @@ namespace Desafiocdsdsv
             }
         }
 
-        private void btnCSV_Click(object sender, EventArgs e)
+
+        private void btnCSVgerar_Click(object sender, EventArgs e)
         {
-            frmCSV frm = new frmCSV();
+            string arquivoCSV;
             if (string.IsNullOrEmpty(StringPreenchida()))
             {
                 return;
             }
+            if (string.IsNullOrEmpty(txtCaminho.Text))
+            {
+                MessageBox.Show("Informe o caminho e nome do arquivo CSV !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
             else
             {
-                frm.Show();
+                arquivoCSV = txtCaminho.Text;
+            }
+            try
+            {
+                var stringConexao = StringPreenchida();
+                if (string.IsNullOrEmpty(stringConexao))
+                    return;
+                conexao = new SqlConnection(stringConexao);
+                conexao.Open();
+                SqlDataAdapter adp = new SqlDataAdapter("select * from Cliente", conexao);
+                DataTable dt = new DataTable();
+                adp.Fill(dt);
+                //cria um streamwriter para escrever no arquivo CSV
+                StreamWriter sw = new StreamWriter(txtCaminho.Text, false);
+                int iColCount = dt.Columns.Count;
+                //conta as colunas para montar o cabecalho
+                for (int i = 0; i < iColCount; i++)
+                {
+                    sw.Write(dt.Columns[i]);
+                    if (i < iColCount - 1)
+                    {
+                        sw.Write("|");
+                    }
+                }
+                sw.Write(sw.NewLine);
+                //percorre cada linha do datatable e monta o arquivo CSV
+                foreach (DataRow dr in dt.Rows)
+                {
+                    for (int i = 0; i < iColCount; i++)
+                    {
+                        if (!Convert.IsDBNull(dr[i]))
+                        {
+                            sw.Write(dr[i].ToString());
+                        }
+                        if (i < iColCount - 1)
+                        {
+                            sw.Write("|");
+                        }
+                    }
+                    sw.Write(sw.NewLine);
+                }
+
+                conexao.Close();
+                conexao.Open();
+                SqlDataAdapter adp1 = new SqlDataAdapter("select * from Debitos", conexao);
+                DataTable dt1 = new DataTable();
+                adp1.Fill(dt1);
+                int iColCount1 = dt1.Columns.Count;
+                //conta as colunas para montar o cabecalho
+                for (int i = 0; i < iColCount1; i++)
+                {
+                    sw.Write(dt1.Columns[i]);
+                    if (i < iColCount1 - 1)
+                    {
+                        sw.Write("|");
+                    }
+                }
+                sw.Write(sw.NewLine);
+
+                //percorre cada linha do datatable e monta o arquivo CSV
+                foreach (DataRow dr1 in dt1.Rows)
+                {
+                    for (int i = 0; i < iColCount1; i++)
+                    {
+                        if (!Convert.IsDBNull(dr1[i]))
+                        {
+                            sw.Write(dr1[i].ToString());
+                        }
+                        if (i < iColCount1 - 1)
+                        {
+                            sw.Write("|");
+                        }
+                    }
+                    sw.Write(sw.NewLine);
+                }
+                sw.Close();
+                MessageBox.Show("Arquivo CSV gerado com sucesso !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                conexao.Close();
+            }
+
+        }
+
+        private void btnCaminho_Click(object sender, EventArgs e)
+        {
+
+            frmDesafioDSV frmD = new frmDesafioDSV();
+            SaveFileDialog svFileDialog = new SaveFileDialog();
+            svFileDialog.Filter = "CSV file (*.csv)|*.csv";
+            svFileDialog.Title = "Salve um arquivo excel";
+            if (svFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string caminhoDoExe = svFileDialog.FileName;
+                txtCaminho.Text = caminhoDoExe;
             }
         }
     }

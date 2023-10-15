@@ -44,7 +44,11 @@ namespace Desafiocdsdsv
             label2 = new Label();
             txtServer = new TextBox();
             btnTestarCon = new Button();
-            btnCSV = new Button();
+            label6 = new Label();
+            btnCaminho = new Button();
+            btnCSVgerar = new Button();
+            txtCaminho = new TextBox();
+            label7 = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -180,30 +184,67 @@ namespace Desafiocdsdsv
             btnTestarCon.UseVisualStyleBackColor = true;
             btnTestarCon.Click += btnTestarCon_Click;
             // 
-            // btnCSV
+            // label6
             // 
-            btnCSV.Location = new Point(312, 126);
-            btnCSV.Name = "btnCSV";
-            btnCSV.Size = new Size(134, 51);
-            btnCSV.TabIndex = 8;
-            btnCSV.Text = "Gerar CSV";
-            btnCSV.UseVisualStyleBackColor = true;
-            btnCSV.Click += btnCSV_Click;
+            label6.AutoSize = true;
+            label6.Location = new Point(12, 194);
+            label6.Name = "label6";
+            label6.Size = new Size(140, 15);
+            label6.TabIndex = 12;
+            label6.Text = "Caminho onde será salvo";
+            // 
+            // btnCaminho
+            // 
+            btnCaminho.Location = new Point(393, 212);
+            btnCaminho.Name = "btnCaminho";
+            btnCaminho.Size = new Size(53, 23);
+            btnCaminho.TabIndex = 11;
+            btnCaminho.Text = "Abrir";
+            btnCaminho.UseVisualStyleBackColor = true;
+            btnCaminho.Click += btnCaminho_Click;
+            // 
+            // btnCSVgerar
+            // 
+            btnCSVgerar.Location = new Point(12, 241);
+            btnCSVgerar.Name = "btnCSVgerar";
+            btnCSVgerar.Size = new Size(134, 50);
+            btnCSVgerar.TabIndex = 10;
+            btnCSVgerar.Text = "Gerar CSV";
+            btnCSVgerar.UseVisualStyleBackColor = true;
+            btnCSVgerar.Click += btnCSVgerar_Click;
+            // 
+            // txtCaminho
+            // 
+            txtCaminho.Location = new Point(12, 212);
+            txtCaminho.Name = "txtCaminho";
+            txtCaminho.Size = new Size(375, 23);
+            txtCaminho.TabIndex = 9;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(12, 179);
+            label7.Name = "label7";
+            label7.Size = new Size(163, 15);
+            label7.TabIndex = 13;
+            label7.Text = "Gerar CSV do Banco de dados";
             // 
             // frmDesafioDSV
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(457, 194);
-            Controls.Add(btnCSV);
+            ClientSize = new Size(457, 301);
+            Controls.Add(label7);
+            Controls.Add(label6);
+            Controls.Add(btnCaminho);
+            Controls.Add(btnCSVgerar);
+            Controls.Add(txtCaminho);
             Controls.Add(btnTestarCon);
             Controls.Add(groupBox1);
             Controls.Add(btnBuscaEx);
             Controls.Add(label1);
             Controls.Add(txtDiretorio);
             Controls.Add(btnInsert);
-            MaximumSize = new Size(473, 233);
-            MinimumSize = new Size(473, 233);
             Name = "frmDesafioDSV";
             Text = "Desafio DSV";
             groupBox1.ResumeLayout(false);
@@ -228,5 +269,10 @@ namespace Desafiocdsdsv
         public MaskedTextBox txtPassword;
         private Button btnTestarCon;
         private Button btnCSV;
+        private Label label6;
+        private Button btnCaminho;
+        private Button btnCSVgerar;
+        private TextBox txtCaminho;
+        private Label label7;
     }
 }
