@@ -17,3 +17,8 @@ No projeto, temos Três botões Inserir no banco, Testar conexão e buscar. Reco
 com seu SQL SERVER. O botão buscar, que é codificado através do openfiledialog tem como finalidade permitir que o usuário busque uma tabela em seu computador. O botão "Inserir no Banco", realiza a inserção das informações
 da planilha especificada pelo usuário no banco de dados.
 (Todos os campos estão sendo validados, então se por ventura não preencher um deles, o programa não realizará a operação de inserção no banco)
+
+**Nova funcionalidade**
+
+Agora é possível gerar um csv dos dados inseridos no banco de dados.
+Para gerar basta inserir o caminho em que o arquivo será salvo e escolher um período de emissão da fatura dos débitos. A parte do cliente já gera normalmente.
