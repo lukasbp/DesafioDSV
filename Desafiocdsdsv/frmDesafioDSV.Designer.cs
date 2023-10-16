@@ -49,6 +49,11 @@ namespace Desafiocdsdsv
             btnCSVgerar = new Button();
             txtCaminho = new TextBox();
             label7 = new Label();
+            dtpInicio = new DateTimePicker();
+            label8 = new Label();
+            label9 = new Label();
+            dtpFinal = new DateTimePicker();
+            label10 = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -82,7 +87,7 @@ namespace Desafiocdsdsv
             // 
             btnBuscaEx.Location = new Point(393, 96);
             btnBuscaEx.Name = "btnBuscaEx";
-            btnBuscaEx.Size = new Size(53, 24);
+            btnBuscaEx.Size = new Size(78, 24);
             btnBuscaEx.TabIndex = 5;
             btnBuscaEx.Text = "Buscar Excel";
             btnBuscaEx.UseVisualStyleBackColor = true;
@@ -100,7 +105,7 @@ namespace Desafiocdsdsv
             groupBox1.Controls.Add(txtServer);
             groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(434, 64);
+            groupBox1.Size = new Size(459, 64);
             groupBox1.TabIndex = 6;
             groupBox1.TabStop = false;
             groupBox1.Text = "Conexao Banco";
@@ -197,7 +202,7 @@ namespace Desafiocdsdsv
             // 
             btnCaminho.Location = new Point(393, 212);
             btnCaminho.Name = "btnCaminho";
-            btnCaminho.Size = new Size(53, 23);
+            btnCaminho.Size = new Size(78, 23);
             btnCaminho.TabIndex = 11;
             btnCaminho.Text = "Abrir";
             btnCaminho.UseVisualStyleBackColor = true;
@@ -207,7 +212,7 @@ namespace Desafiocdsdsv
             // 
             btnCSVgerar.Location = new Point(12, 241);
             btnCSVgerar.Name = "btnCSVgerar";
-            btnCSVgerar.Size = new Size(134, 50);
+            btnCSVgerar.Size = new Size(134, 64);
             btnCSVgerar.TabIndex = 10;
             btnCSVgerar.Text = "Gerar CSV";
             btnCSVgerar.UseVisualStyleBackColor = true;
@@ -229,11 +234,61 @@ namespace Desafiocdsdsv
             label7.TabIndex = 13;
             label7.Text = "Gerar CSV do Banco de dados";
             // 
+            // dtpInicio
+            // 
+            dtpInicio.Format = DateTimePickerFormat.Short;
+            dtpInicio.Location = new Point(286, 280);
+            dtpInicio.Name = "dtpInicio";
+            dtpInicio.Size = new Size(80, 23);
+            dtpInicio.TabIndex = 16;
+            dtpInicio.Value = new DateTime(2023, 10, 15, 0, 0, 0, 0);
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(286, 262);
+            label8.Name = "label8";
+            label8.Size = new Size(36, 15);
+            label8.TabIndex = 17;
+            label8.Text = "Início";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(384, 260);
+            label9.Name = "label9";
+            label9.Size = new Size(32, 15);
+            label9.TabIndex = 19;
+            label9.Text = "Final";
+            // 
+            // dtpFinal
+            // 
+            dtpFinal.Format = DateTimePickerFormat.Short;
+            dtpFinal.Location = new Point(384, 280);
+            dtpFinal.Name = "dtpFinal";
+            dtpFinal.Size = new Size(80, 23);
+            dtpFinal.TabIndex = 18;
+            dtpFinal.Value = new DateTime(2023, 10, 15, 0, 0, 0, 0);
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(286, 241);
+            label10.Name = "label10";
+            label10.Size = new Size(185, 15);
+            label10.TabIndex = 20;
+            label10.Text = "Período em que será gerado o csv";
+            // 
             // frmDesafioDSV
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(457, 301);
+            ClientSize = new Size(483, 317);
+            Controls.Add(label10);
+            Controls.Add(label9);
+            Controls.Add(dtpFinal);
+            Controls.Add(label8);
+            Controls.Add(dtpInicio);
             Controls.Add(label7);
             Controls.Add(label6);
             Controls.Add(btnCaminho);
@@ -274,5 +329,12 @@ namespace Desafiocdsdsv
         private Button btnCSVgerar;
         private TextBox txtCaminho;
         private Label label7;
+        private RadioButton rbVirgula;
+        private RadioButton rbBarra;
+        private DateTimePicker dtpInicio;
+        private Label label8;
+        private Label label9;
+        private DateTimePicker dtpFinal;
+        private Label label10;
     }
 }

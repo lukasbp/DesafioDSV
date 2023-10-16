@@ -38,6 +38,7 @@ namespace Desafiocdsdsv
                 return;
             try
             {
+
                 conexao = new SqlConnection(stringConexao);
                 conexao.Open();
                 var xls = new XLWorkbook(txtDiretorio.Text);
@@ -86,6 +87,7 @@ namespace Desafiocdsdsv
                 }
                 var planilhas2 = xls.Worksheets.First(w => w.Name == "Debitos");
                 var totalLinhas2 = planilhas2.Rows().Count();
+
                 for (int i = 2; i <= totalLinhas2; i++)
                 {
                     var Fatura = planilhas2.Cell($"A{i}").Value.ToString();
@@ -97,6 +99,9 @@ namespace Desafiocdsdsv
                     }
                     DateTime.TryParse(planilhas2.Cell($"C{i}").Value.ToString(), out DateTime Emissao);
                     DateTime.TryParse(planilhas2.Cell($"D{i}").Value.ToString(), out DateTime Vencimento);
+                    //DateTime dt = DateTime.ParseExact(txtDataInicio.Text, "yyyy-dd-mm",
+                    //              CultureInfo.InvariantCulture);
+                    //dt.ToString("dd-MM-yyyy");
                     //string Emissao = planilhas2.Cell($"C{i}").Value.ToString();
                     //string Vencimento = planilhas2.Cell($"D{i}").Value.ToString();
                     decimal.TryParse(planilhas2.Cell($"E{i}").Value.ToString(), out decimal Valor);
@@ -129,8 +134,10 @@ namespace Desafiocdsdsv
                                                             @ValorPago)", conexao);
                     cmd.Parameters.Add("@Fatura", SqlDbType.VarChar).Value = Fatura;
                     cmd.Parameters.Add("@Cliente", SqlDbType.Int).Value = Cliente;
-                    cmd.Parameters.Add("@Emissao", SqlDbType.DateTime).Value = Emissao;
-                    cmd.Parameters.Add("@Vencimento", SqlDbType.DateTime).Value = Vencimento;
+                    string[] validformats = new[] { "MM/dd/yyyy", "yyyy/MM/dd", "MM/dd/yyyy HH:mm:ss",
+                                        "MM/dd/yyyy hh:mm tt", "yyyy-MM-dd HH:mm:ss, fff" };
+                    cmd.Parameters.Add("@Emissao", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Emissao.ToShortDateString()) ? DateTime.ParseExact(Emissao.ToShortDateString(),validformats, CultureInfo.InvariantCulture) : DBNull.Value;
+                    cmd.Parameters.Add("@Vencimento", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Vencimento.ToShortDateString()) ? DateTime.ParseExact(Vencimento.ToShortDateString(),validformats, CultureInfo.InvariantCulture) : DBNull.Value;
                     cmd.Parameters.Add("@Valor", SqlDbType.Decimal).Value = Valor;
                     cmd.Parameters.Add("@Juros", SqlDbType.Decimal).Value = Juros;
                     cmd.Parameters.Add("@Descontos", SqlDbType.Decimal).Value = Descontos;
@@ -214,6 +221,7 @@ namespace Desafiocdsdsv
             {
                 return;
             }
+
             if (string.IsNullOrEmpty(txtCaminho.Text))
             {
                 MessageBox.Show("Informe o caminho e nome do arquivo CSV !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -222,80 +230,85 @@ namespace Desafiocdsdsv
             {
                 arquivoCSV = txtCaminho.Text;
             }
+
+            //cria um streamwriter para escrever no arquivo CSV
+            StreamWriter sw = new StreamWriter(txtCaminho.Text, false, Encoding.UTF8);
+
             try
             {
                 var stringConexao = StringPreenchida();
-                if (string.IsNullOrEmpty(stringConexao))
-                    return;
+
                 conexao = new SqlConnection(stringConexao);
                 conexao.Open();
-                SqlDataAdapter adp = new SqlDataAdapter("select * from Cliente", conexao);
-                DataTable dt = new DataTable();
-                adp.Fill(dt);
-                //cria um streamwriter para escrever no arquivo CSV
-                StreamWriter sw = new StreamWriter(txtCaminho.Text, false);
-                int iColCount = dt.Columns.Count;
-                //conta as colunas para montar o cabecalho
-                for (int i = 0; i < iColCount; i++)
+
+
+                SqlDataAdapter daCliente = new SqlDataAdapter("select * from Cliente", conexao);
+                DataTable dtCliente = new DataTable();
+                daCliente.Fill(dtCliente);
+
+                if (dtCliente.Rows.Count == 0)
                 {
-                    sw.Write(dt.Columns[i]);
-                    if (i < iColCount - 1)
-                    {
-                        sw.Write("|");
-                    }
+                    MessageBox.Show("Tabela de clientes vazia. Execute a leitura primeiro!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                sw.Write(sw.NewLine);
-                //percorre cada linha do datatable e monta o arquivo CSV
-                foreach (DataRow dr in dt.Rows)
+
+                sw.Write("Cliente");
+                for (int i = 0; i < dtCliente.Columns.Count; i++)
                 {
-                    for (int i = 0; i < iColCount; i++)
-                    {
-                        if (!Convert.IsDBNull(dr[i]))
-                        {
-                            sw.Write(dr[i].ToString());
-                        }
-                        if (i < iColCount - 1)
-                        {
-                            sw.Write("|");
-                        }
-                    }
-                    sw.Write(sw.NewLine);
+                    sw.Write($"|{dtCliente.Columns[i]}");
+                }
+                sw.WriteLine("|||");
+
+                for (int i = 0; i < dtCliente.Rows.Count; i++)
+                {
+                    string ID = dtCliente.Rows[i]["ID"].ToString();
+                    string Nome = dtCliente.Rows[i]["Nome"].ToString();
+                    string Cidade = dtCliente.Rows[i]["Cidade"].ToString();
+                    string UF = dtCliente.Rows[i]["UF"].ToString();
+                    string CEP = dtCliente.Rows[i]["CEP"].ToString();
+                    string CPF = dtCliente.Rows[i]["CPF"].ToString();
+
+                    sw.WriteLine($"Cliente|{ID}|{Nome}|{Cidade}|{UF}|{CEP}|{CPF}|");
                 }
 
                 conexao.Close();
                 conexao.Open();
-                SqlDataAdapter adp1 = new SqlDataAdapter("select * from Debitos", conexao);
-                DataTable dt1 = new DataTable();
-                adp1.Fill(dt1);
-                int iColCount1 = dt1.Columns.Count;
-                //conta as colunas para montar o cabecalho
-                for (int i = 0; i < iColCount1; i++)
-                {
-                    sw.Write(dt1.Columns[i]);
-                    if (i < iColCount1 - 1)
-                    {
-                        sw.Write("|");
-                    }
-                }
-                sw.Write(sw.NewLine);
 
-                //percorre cada linha do datatable e monta o arquivo CSV
-                foreach (DataRow dr1 in dt1.Rows)
+                SqlDataAdapter daDebito = new SqlDataAdapter("select * from Debitos where Emissao between @DataInicial and @DataFinal", conexao);
+                daDebito.SelectCommand.Parameters.Add("@DataInicial", SqlDbType.DateTime).Value = dtpInicio.Value;
+                daDebito.SelectCommand.Parameters.Add("@DataFinal", SqlDbType.DateTime).Value = dtpFinal.Value;
+
+                DataTable dtDebito = new DataTable();
+                daDebito.Fill(dtDebito);
+
+                if (dtDebito.Rows.Count == 0)
                 {
-                    for (int i = 0; i < iColCount1; i++)
-                    {
-                        if (!Convert.IsDBNull(dr1[i]))
-                        {
-                            sw.Write(dr1[i].ToString());
-                        }
-                        if (i < iColCount1 - 1)
-                        {
-                            sw.Write("|");
-                        }
-                    }
-                    sw.Write(sw.NewLine);
+                    MessageBox.Show("Tabela de débitos vazia. Execute a leitura primeiro!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                sw.Close();
+
+                sw.Write($"Debitos");
+                for (int i = 0; i < dtDebito.Columns.Count; i++)
+                {
+                    sw.Write($"|{dtDebito.Columns[i]}");
+                }
+                sw.WriteLine();
+
+                for (int i = 0; i < dtDebito.Rows.Count; i++)
+                {
+                    string Fatura = dtDebito.Rows[i]["Fatura"].ToString();
+                    string Cliente = dtDebito.Rows[i]["Cliente"].ToString();
+                    string Emissao = DateTime.Parse(dtDebito.Rows[i]["Emissao"].ToString()).ToShortDateString();
+                    string Vencimento = DateTime.Parse(dtDebito.Rows[i]["Vencimento"].ToString()).ToShortDateString();
+                    string Valor = dtDebito.Rows[i]["Valor"].ToString();
+                    string Juros = dtDebito.Rows[i]["Juros"].ToString();
+                    string Descontos = dtDebito.Rows[i]["Descontos"].ToString();
+                    string Pagamento = (string.IsNullOrEmpty(dtDebito.Rows[i]["Pagamento"].ToString()) ? "" : DateTime.Parse(dtDebito.Rows[i]["Pagamento"].ToString()).ToShortDateString());
+                    string ValorPago = dtDebito.Rows[i]["ValorPago"].ToString();
+
+                    sw.WriteLine($"Debitos|{Fatura}|{Cliente}|{Emissao}|{Vencimento}|{Valor}|{Juros}|{Descontos}|{Pagamento}|{ValorPago}");
+                }
+
                 MessageBox.Show("Arquivo CSV gerado com sucesso !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -305,8 +318,8 @@ namespace Desafiocdsdsv
             finally
             {
                 conexao.Close();
+                sw.Close();
             }
-
         }
 
         private void btnCaminho_Click(object sender, EventArgs e)
@@ -314,8 +327,10 @@ namespace Desafiocdsdsv
 
             frmDesafioDSV frmD = new frmDesafioDSV();
             SaveFileDialog svFileDialog = new SaveFileDialog();
+
             svFileDialog.Filter = "CSV file (*.csv)|*.csv";
             svFileDialog.Title = "Salve um arquivo excel";
+
             if (svFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string caminhoDoExe = svFileDialog.FileName;
