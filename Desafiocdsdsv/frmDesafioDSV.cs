@@ -97,8 +97,8 @@ namespace Desafiocdsdsv
                         MessageBox.Show("Débito " + i + " não inserido pois o cliente não existe");
                         continue;
                     }
-                    DateTime.TryParse(planilhas2.Cell($"C{i}").Value.ToString(), out DateTime Emissao);
-                    DateTime.TryParse(planilhas2.Cell($"D{i}").Value.ToString(), out DateTime Vencimento);
+                    string Emissao = ConverterParaFormatoSQL(planilhas2.Cell($"C{i}").Value.ToString());
+                    string Vencimento = ConverterParaFormatoSQL(planilhas2.Cell($"D{i}").Value.ToString());
                     //DateTime dt = DateTime.ParseExact(txtDataInicio.Text, "yyyy-dd-mm",
                     //              CultureInfo.InvariantCulture);
                     //dt.ToString("dd-MM-yyyy");
@@ -108,7 +108,7 @@ namespace Desafiocdsdsv
 
                     decimal.TryParse(planilhas2.Cell($"F{i}").Value.ToString(), out decimal Juros);
                     decimal.TryParse(planilhas2.Cell($"G{i}").Value.ToString(), out decimal Descontos);
-                    var Pagamento = planilhas2.Cell($"H{i}").Value.ToString();
+                    string Pagamento = ConverterParaFormatoSQL(planilhas2.Cell($"H{i}").Value.ToString());
                     decimal.TryParse(planilhas2.Cell($"I{i}").Value.ToString(), out decimal ValorPago);
                     //'{DateTime.TryParseExact(Emissao.ToString(), "dd/mm/yy", CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces , out Emissao)}',
                     //'{DateTime.TryParseExact(Vencimento.ToString(), "dd/mm/yy", CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out Vencimento)}',
@@ -134,14 +134,12 @@ namespace Desafiocdsdsv
                                                             @ValorPago)", conexao);
                     cmd.Parameters.Add("@Fatura", SqlDbType.VarChar).Value = Fatura;
                     cmd.Parameters.Add("@Cliente", SqlDbType.Int).Value = Cliente;
-                    string[] validformats = new[] { "MM/dd/yyyy", "yyyy/MM/dd", "MM/dd/yyyy HH:mm:ss",
-                                        "MM/dd/yyyy hh:mm tt", "yyyy-MM-dd HH:mm:ss, fff" };
-                    cmd.Parameters.Add("@Emissao", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Emissao.ToShortDateString()) ? DateTime.ParseExact(Emissao.ToShortDateString(),validformats, CultureInfo.InvariantCulture) : DBNull.Value;
-                    cmd.Parameters.Add("@Vencimento", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Vencimento.ToShortDateString()) ? DateTime.ParseExact(Vencimento.ToShortDateString(),validformats, CultureInfo.InvariantCulture) : DBNull.Value;
+                    cmd.Parameters.Add("@Emissao", SqlDbType.DateTime).Value = Emissao;
+                    cmd.Parameters.Add("@Vencimento", SqlDbType.DateTime).Value = Vencimento;
                     cmd.Parameters.Add("@Valor", SqlDbType.Decimal).Value = Valor;
                     cmd.Parameters.Add("@Juros", SqlDbType.Decimal).Value = Juros;
                     cmd.Parameters.Add("@Descontos", SqlDbType.Decimal).Value = Descontos;
-                    cmd.Parameters.Add("@Pagamento", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Pagamento) ? DateTime.Parse(Pagamento) : DBNull.Value;
+                    cmd.Parameters.Add("@Pagamento", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Pagamento) ? Pagamento : DBNull.Value;
                     cmd.Parameters.Add("@ValorPago", SqlDbType.Decimal).Value = ValorPago;
 
                     cmd.ExecuteNonQuery();
@@ -221,30 +219,36 @@ namespace Desafiocdsdsv
             {
                 return;
             }
-
-            if (string.IsNullOrEmpty(txtCaminho.Text))
+            else if (string.IsNullOrEmpty(txtCaminho.Text))
             {
                 MessageBox.Show("Informe o caminho e nome do arquivo CSV !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                arquivoCSV = txtCaminho.Text;
+                return;
             }
 
-            //cria um streamwriter para escrever no arquivo CSV
-            StreamWriter sw = new StreamWriter(txtCaminho.Text, false, Encoding.UTF8);
-
+            StreamWriter sw = new StreamWriter(txtCaminho.Text, false);
             try
             {
+
+                if (string.IsNullOrEmpty(txtCaminho.Text))
+                {
+                    MessageBox.Show("Informe o caminho e nome do arquivo CSV !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                arquivoCSV = txtCaminho.Text;
+                FileInfo f = new FileInfo(arquivoCSV);
+
                 var stringConexao = StringPreenchida();
 
-                conexao = new SqlConnection(stringConexao);
-                conexao.Open();
-
-
-                SqlDataAdapter daCliente = new SqlDataAdapter("select * from Cliente", conexao);
+                SqlConnection conexaoCliente = new SqlConnection(stringConexao);
+                conexaoCliente.Open();
+                SqlDataAdapter daCliente = new SqlDataAdapter("select Id,Nome,CPF,Cidade from Cliente", conexaoCliente);
                 DataTable dtCliente = new DataTable();
                 daCliente.Fill(dtCliente);
+
+                SqlConnection conexaoDebito = new SqlConnection(stringConexao);
+                conexaoDebito.Open();
+
 
                 if (dtCliente.Rows.Count == 0)
                 {
@@ -252,73 +256,56 @@ namespace Desafiocdsdsv
                     return;
                 }
 
-                sw.Write("Cliente");
-                for (int i = 0; i < dtCliente.Columns.Count; i++)
-                {
-                    sw.Write($"|{dtCliente.Columns[i]}");
-                }
-                sw.WriteLine("|||");
-
                 for (int i = 0; i < dtCliente.Rows.Count; i++)
                 {
-                    string ID = dtCliente.Rows[i]["ID"].ToString();
+                    SqlDataAdapter daDebito = new SqlDataAdapter("select fatura,emissao,vencimento,valor,valorpago,pagamento from Debitos where Emissao between @DataInicial and @DataFinal and Cliente = @Cliente", conexaoDebito);
+                    daDebito.SelectCommand.Parameters.Add("@DataInicial", SqlDbType.DateTime).Value = dtpInicio.Value;
+                    daDebito.SelectCommand.Parameters.Add("@DataFinal", SqlDbType.DateTime).Value = dtpFinal.Value;
+                    daDebito.SelectCommand.Parameters.Add("@Cliente", SqlDbType.Int).Value = dtCliente.Rows[i]["Id"].ToString();
+
+                    DataTable dtDebito = new DataTable();
+                    daDebito.Fill(dtDebito);
+
+                    if (dtDebito.Rows.Count == 0)
+                    {
+                        continue;
+                    }
+
                     string Nome = dtCliente.Rows[i]["Nome"].ToString();
-                    string Cidade = dtCliente.Rows[i]["Cidade"].ToString();
-                    string UF = dtCliente.Rows[i]["UF"].ToString();
-                    string CEP = dtCliente.Rows[i]["CEP"].ToString();
                     string CPF = dtCliente.Rows[i]["CPF"].ToString();
+                    string Cidade = dtCliente.Rows[i]["Cidade"].ToString();
 
-                    sw.WriteLine($"Cliente|{ID}|{Nome}|{Cidade}|{UF}|{CEP}|{CPF}|");
+                    sw.WriteLine($"Cliente|{Nome}|{CPF}|{Cidade}|");
+
+                    for (int j = 0; j < dtDebito.Rows.Count; j++)
+                    {
+
+                        string Fatura = dtDebito.Rows[j]["Fatura"].ToString();
+                        string Emissao = DateTime.Parse(dtDebito.Rows[j]["Emissao"].ToString()).ToShortDateString();
+                        string Vencimento = DateTime.Parse(dtDebito.Rows[j]["Vencimento"].ToString()).ToShortDateString();
+                        string Valor = dtDebito.Rows[j]["Valor"].ToString();
+                        string ValorPago = dtDebito.Rows[j]["ValorPago"].ToString();
+                        string Pagamento = (string.IsNullOrEmpty(dtDebito.Rows[j]["Pagamento"].ToString()) ? "" : DateTime.Parse(dtDebito.Rows[j]["Pagamento"].ToString()).ToShortDateString());
+
+                        sw.WriteLine($"Debitos|{Fatura}|{Emissao}|{Vencimento}|{Valor}|{ValorPago}|{Pagamento}");
+                    }
                 }
+                sw.Flush();
+                sw.Close();
 
-                conexao.Close();
-                conexao.Open();
-
-                SqlDataAdapter daDebito = new SqlDataAdapter("select * from Debitos where Emissao between @DataInicial and @DataFinal", conexao);
-                daDebito.SelectCommand.Parameters.Add("@DataInicial", SqlDbType.DateTime).Value = dtpInicio.Value;
-                daDebito.SelectCommand.Parameters.Add("@DataFinal", SqlDbType.DateTime).Value = dtpFinal.Value;
-
-                DataTable dtDebito = new DataTable();
-                daDebito.Fill(dtDebito);
-
-                if (dtDebito.Rows.Count == 0)
+                if (f.Length == 0)
                 {
-                    MessageBox.Show("Tabela de débitos vazia. Execute a leitura primeiro!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Nenhuma informação foi encontrada!", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    f.Delete();
                     return;
                 }
-
-                sw.Write($"Debitos");
-                for (int i = 0; i < dtDebito.Columns.Count; i++)
-                {
-                    sw.Write($"|{dtDebito.Columns[i]}");
-                }
-                sw.WriteLine();
-
-                for (int i = 0; i < dtDebito.Rows.Count; i++)
-                {
-                    string Fatura = dtDebito.Rows[i]["Fatura"].ToString();
-                    string Cliente = dtDebito.Rows[i]["Cliente"].ToString();
-                    string Emissao = DateTime.Parse(dtDebito.Rows[i]["Emissao"].ToString()).ToShortDateString();
-                    string Vencimento = DateTime.Parse(dtDebito.Rows[i]["Vencimento"].ToString()).ToShortDateString();
-                    string Valor = dtDebito.Rows[i]["Valor"].ToString();
-                    string Juros = dtDebito.Rows[i]["Juros"].ToString();
-                    string Descontos = dtDebito.Rows[i]["Descontos"].ToString();
-                    string Pagamento = (string.IsNullOrEmpty(dtDebito.Rows[i]["Pagamento"].ToString()) ? "" : DateTime.Parse(dtDebito.Rows[i]["Pagamento"].ToString()).ToShortDateString());
-                    string ValorPago = dtDebito.Rows[i]["ValorPago"].ToString();
-
-                    sw.WriteLine($"Debitos|{Fatura}|{Cliente}|{Emissao}|{Vencimento}|{Valor}|{Juros}|{Descontos}|{Pagamento}|{ValorPago}");
-                }
-
+                conexaoCliente.Close();
+                conexaoDebito.Close();
                 MessageBox.Show("Arquivo CSV gerado com sucesso !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                conexao.Close();
-                sw.Close();
             }
         }
 
@@ -335,6 +322,27 @@ namespace Desafiocdsdsv
             {
                 string caminhoDoExe = svFileDialog.FileName;
                 txtCaminho.Text = caminhoDoExe;
+            }
+        }
+
+        public string ConverterParaFormatoSQL(string data)
+        {
+            if(string.IsNullOrEmpty(data))
+            {
+                return "";
+            }
+            data = data.Substring(0,10);
+
+            DateTime parsedDate;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            string[] formats = { "yyyy-MM-dd", "yyyy/MM/dd", "dd-MM-yyyy", "dd/MM/yyyy" };
+            if (DateTime.TryParseExact(data, formats, provider, DateTimeStyles.None, out parsedDate))
+            {
+                return parsedDate.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                throw new Exception("Formato de data inválido.");
             }
         }
     }
