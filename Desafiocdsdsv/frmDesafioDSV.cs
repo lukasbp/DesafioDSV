@@ -97,8 +97,8 @@ namespace Desafiocdsdsv
                         MessageBox.Show("Débito " + i + " não inserido pois o cliente não existe");
                         continue;
                     }
-                    DateTime.TryParse(planilhas2.Cell($"C{i}").Value.ToString(), out DateTime Emissao);
-                    DateTime.TryParse(planilhas2.Cell($"D{i}").Value.ToString(), out DateTime Vencimento);
+                    string Emissao = ConverterParaFormatoSQL(planilhas2.Cell($"C{i}").Value.ToString());
+                    string Vencimento = ConverterParaFormatoSQL(planilhas2.Cell($"D{i}").Value.ToString());
                     //DateTime dt = DateTime.ParseExact(txtDataInicio.Text, "yyyy-dd-mm",
                     //              CultureInfo.InvariantCulture);
                     //dt.ToString("dd-MM-yyyy");
@@ -108,7 +108,7 @@ namespace Desafiocdsdsv
 
                     decimal.TryParse(planilhas2.Cell($"F{i}").Value.ToString(), out decimal Juros);
                     decimal.TryParse(planilhas2.Cell($"G{i}").Value.ToString(), out decimal Descontos);
-                    var Pagamento = planilhas2.Cell($"H{i}").Value.ToString();
+                    string Pagamento = ConverterParaFormatoSQL(planilhas2.Cell($"H{i}").Value.ToString());
                     decimal.TryParse(planilhas2.Cell($"I{i}").Value.ToString(), out decimal ValorPago);
                     //'{DateTime.TryParseExact(Emissao.ToString(), "dd/mm/yy", CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces , out Emissao)}',
                     //'{DateTime.TryParseExact(Vencimento.ToString(), "dd/mm/yy", CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out Vencimento)}',
@@ -139,7 +139,7 @@ namespace Desafiocdsdsv
                     cmd.Parameters.Add("@Valor", SqlDbType.Decimal).Value = Valor;
                     cmd.Parameters.Add("@Juros", SqlDbType.Decimal).Value = Juros;
                     cmd.Parameters.Add("@Descontos", SqlDbType.Decimal).Value = Descontos;
-                    cmd.Parameters.Add("@Pagamento", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Pagamento) ? DateTime.Parse(Pagamento) : DBNull.Value;
+                    cmd.Parameters.Add("@Pagamento", SqlDbType.DateTime).Value = !string.IsNullOrEmpty(Pagamento) ? Pagamento : DBNull.Value;
                     cmd.Parameters.Add("@ValorPago", SqlDbType.Decimal).Value = ValorPago;
 
                     cmd.ExecuteNonQuery();
@@ -225,18 +225,18 @@ namespace Desafiocdsdsv
                 return;
             }
 
-            StreamWriter sw = new StreamWriter(txtCaminho.Text, false, Encoding.UTF8);
+            StreamWriter sw = new StreamWriter(txtCaminho.Text, false);
             try
             {
 
                 if (string.IsNullOrEmpty(txtCaminho.Text))
                 {
                     MessageBox.Show("Informe o caminho e nome do arquivo CSV !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
-                else
-                {
-                    arquivoCSV = txtCaminho.Text;
-                }
+
+                arquivoCSV = txtCaminho.Text;
+                FileInfo f = new FileInfo(arquivoCSV);
 
                 var stringConexao = StringPreenchida();
 
@@ -290,7 +290,15 @@ namespace Desafiocdsdsv
                         sw.WriteLine($"Debitos|{Fatura}|{Emissao}|{Vencimento}|{Valor}|{ValorPago}|{Pagamento}");
                     }
                 }
+                sw.Flush();
+                sw.Close();
 
+                if (f.Length == 0)
+                {
+                    MessageBox.Show("Nenhuma informação foi encontrada!", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    f.Delete();
+                    return;
+                }
                 conexaoCliente.Close();
                 conexaoDebito.Close();
                 MessageBox.Show("Arquivo CSV gerado com sucesso !", "Arquivo CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -298,10 +306,6 @@ namespace Desafiocdsdsv
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                sw.Close();
             }
         }
 
@@ -318,6 +322,27 @@ namespace Desafiocdsdsv
             {
                 string caminhoDoExe = svFileDialog.FileName;
                 txtCaminho.Text = caminhoDoExe;
+            }
+        }
+
+        public string ConverterParaFormatoSQL(string data)
+        {
+            if(string.IsNullOrEmpty(data))
+            {
+                return "";
+            }
+            data = data.Substring(0,10);
+
+            DateTime parsedDate;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            string[] formats = { "yyyy-MM-dd", "yyyy/MM/dd", "dd-MM-yyyy", "dd/MM/yyyy" };
+            if (DateTime.TryParseExact(data, formats, provider, DateTimeStyles.None, out parsedDate))
+            {
+                return parsedDate.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                throw new Exception("Formato de data inválido.");
             }
         }
     }
